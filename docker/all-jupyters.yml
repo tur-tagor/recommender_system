@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  jupiter-scipy:
+    image: jupyter/scipy-notebook:5438a605eba8
+    ports:
+      - 8888:8888
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - ./facebook_comment_volume_dataset:/home/jovyan/work
+#      - notebooks:/home/jovyan/work
+
+volumes:
+  notebooks:
