@@ -10,8 +10,8 @@ def get_gradient(w, x, y):
     :param y:
     :return: gradient and mse
     """
-    y_estimate = x.dot(w).flatten()
-    error = (y.flatten() - y_estimate)
+    y_predict = x.dot(w).flatten()
+    error = (y.flatten() - y_predict)
     mse = (1.0 / len(x)) * np.sum(np.power(error, 2))
     gradient = -(1.0 / len(x)) * error.dot(x)
     return gradient, mse
@@ -23,7 +23,7 @@ def gradient_descent(alpha: float, tolerance: float, max_iters: int = 1000):
 
         step = alpha
         # w = np.random.randn(X_train.shape[1])
-        w = np.ones(X_train.shape[1])
+        w = np.zeros(X_train.shape[1])
 
         # Perform Gradient Descent
 
@@ -38,7 +38,7 @@ def gradient_descent(alpha: float, tolerance: float, max_iters: int = 1000):
                 print("Converged.")
                 break
 
-            # Print error every 50 iterations
+            # Print error every 100 iterations
             if iterations % 100 == 0:
                 print("Iteration: %d - Error: %.4f" % (iterations, error))
                 if base_error > error:
