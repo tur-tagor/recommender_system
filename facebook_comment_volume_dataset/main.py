@@ -3,7 +3,7 @@ from scipy.io import arff
 from sklearn import metrics, preprocessing
 from tabulate import tabulate
 
-from facebook_comment_volume_dataset.lr_matrix import pseudoinverse_matrix
+from facebook_comment_volume_dataset.lr_gradient import gradient_descent
 
 
 class FoldResult:
@@ -35,8 +35,9 @@ class FoldResult:
         return self._w
 
     def toNdArrayColumn(self) -> np.ndarray:
-        row = np.concatenate([np.array([self._rmse_test, self._rmse_train, self._r2_test, self._r2_train], dtype=np.double),
-                       self._w.flatten()])
+        row = np.concatenate(
+            [np.array([self._rmse_test, self._rmse_train, self._r2_test, self._r2_train], dtype=np.double),
+             self._w.flatten()])
         return row.reshape(row.shape[0], 1)
 
     @rmse_train.setter
@@ -95,21 +96,7 @@ def convert_to_ndarray(d: dict):
     return np.column_stack([x.toNdArrayColumn() for x in d.values()])
 
 
-if __name__ == '__main__':
-    # pseudoinverse_matrix
-    # matrix_equation
-    # gradient_descent(alpha=0.1, tolerance=0.1, max_iters=1000)
-    method = pseudoinverse_matrix
-    dataset, meta = arff.loadarff('dataset/train/Features_Variant_1.arff')
-    np.random.shuffle(dataset)
-    folded_dataset = np.array_split(dataset, 5)
-    folded_results = {}
-    for i, test_dataset in enumerate(folded_dataset):
-        print('fold = ', i)
-        train_dataset = np.array(np.concatenate([x[1] for x in enumerate(folded_dataset) if x[0] != i]).tolist())
-        test_dataset = np.array(test_dataset.tolist())
-        folded_results[i] = fit(train_dataset, test_dataset, method)
-
+def print_results(folded_results):
     label_y = np.concatenate([np.array(['-']),
                               np.array(['F%s' % (n) for n in folded_results.keys()]),
                               np.array(['mean', 'std'])])
@@ -120,3 +107,21 @@ if __name__ == '__main__':
     np.set_printoptions(linewidth=200)
     print('| | F1 | F2 | F3 | F4 | F5 | mean | std |')
     print(tabulate(s, tablefmt='pipe'))
+
+
+if __name__ == '__main__':
+    # pseudoinverse_matrix
+    # matrix_equation
+    # gradient_descent(alpha=0.1, tolerance=0.1, max_iters=1000)
+    method = gradient_descent(alpha=0.1, tolerance=0.1, max_iters=1000)
+    dataset, meta = arff.loadarff('dataset/train/Features_Variant_1.arff')
+    np.random.shuffle(dataset)
+    folded_dataset = np.array_split(dataset, 5)
+    folded_results = {}
+    for i, test_dataset in enumerate(folded_dataset):
+        print('fold = ', i)
+        train_dataset = np.array(np.concatenate([x[1] for x in enumerate(folded_dataset) if x[0] != i]).tolist())
+        test_dataset = np.array(test_dataset.tolist())
+        folded_results[i] = fit(train_dataset, test_dataset, method)
+
+    print_results(folded_results)
