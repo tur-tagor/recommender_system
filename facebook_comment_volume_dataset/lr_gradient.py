@@ -53,6 +53,6 @@ def gradient_descent(alpha: float, tolerance: float, max_iters: int = 1000):
             if iterations == max_iters:
                 break
 
-        return w
+        return w.reshape(w.shape[0], 1)
 
     return gradient_descent_
