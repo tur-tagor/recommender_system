@@ -125,3 +125,4 @@ if __name__ == '__main__':
         folded_results[i] = fit(train_dataset, test_dataset, method)
 
     print_results(folded_results)
+    print(222)
